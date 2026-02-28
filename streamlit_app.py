@@ -376,13 +376,13 @@ with input_col:
         star_map = {'1 Star': '⭐', '2 Star': '⭐⭐', '3 Star': '⭐⭐⭐'}
 
         st.caption("Primary Pet")
-        c1, c2 = st.columns([3, 1])
+        c1, c2, c3 = st.columns(3)
         with c1: pet_main = icon_selector("Pet", ['Cat', 'Eagle', 'Panda', 'Dragon', 'PiaoPiao', 'Koto', 'Fox', 'None'], "Dragon", "pet_main", "Pet")
         with c2: 
-            st.write("")
-            st.write("")
+            
             pet_star = st.selectbox("Star", star_options, index=get_index(star_options, "3 Star"), format_func=lambda x: star_map[x], key="pet_star_1")
-        
+        with c3:
+            st.write("")
         c1, c2, c3 = st.columns(3)
         with c1: pet_emb_1_1 = icon_selector("Str Soul", ['Cat Paw', 'Emperor Thorn', 'Insight Eye', 'None'], "None", "pe11")
         with c2: pet_emb_1_2 = icon_selector("Skill Soul", ['Magic Witch', 'Beast Tooth Mark', 'None'], "None", "pe12")
@@ -390,13 +390,12 @@ with input_col:
         
         st.markdown("---")
         st.caption("Secondary Pet")
-        c1, c2 = st.columns([3, 1])
+        c1, c2, c3 = st.columns(3)
         with c1: pet_2 = icon_selector("Pet", ['Cat', 'Eagle', 'Panda', 'Dragon', 'PiaoPiao', 'Koto', 'Fox', 'None'], "Cat", "pet_2", "Pet")
         with c2: 
-            st.write("")
-            st.write("")
             pet_2_star = st.selectbox("Star", star_options, index=get_index(star_options, "3 Star"), format_func=lambda x: star_map[x], key="pet_star_2")
-        
+        with c3:
+            st.write("")
         c1, c2, c3 = st.columns(3)
         with c1: pet_emb_2_1 = icon_selector("Str Soul", ['Cat Paw', 'Emperor Thorn', 'Insight Eye', 'None'], "None", "pe21")
         with c2: pet_emb_2_2 = icon_selector("Skill Soul", ['Magic Witch', 'Beast Tooth Mark', 'None'], "None", "pe22")
@@ -460,18 +459,21 @@ with input_col:
         with c1: in_buff_counter = icon_selector("Counter Buff", ['Counter', 'None'], "Counter", "in_buff_counter")
 
     with tab_manual:
-        in_monster_def = st.number_input("Monster Def", value=5000, step=50)
-        in_dot_ratio = st.number_input("Effect Ratio", value=5.0, step=0.1) # Default matches save.txt
+        c1, c2= st.columns(2)
+        in_monster_def = c1.number_input("Monster Def", value=5000, step=100)
+        in_dot_ratio = c2.number_input("Effect Ratio", value=5.0, step=0.1) # Default matches save.txt
         st.subheader("Circuit Adjustments")
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns(3)
         man_atk = c1.number_input("Base Atk (+)", value=191)
         man_crit_dmg = c2.number_input("Crit Dmg (+)", value=34.7)
         man_crit_rate = c1.number_input("Crit Rate (+)", value=5.5)
         man_elem = c2.number_input("Elem Boost (+)", value=20.8)
-        man_cd = c1.number_input("Cooldown (+)", value=0.0)
-        man_agi = c2.number_input("Agility (+)", value=0)
-        man_str = c1.number_input("Strength (+)", value=134)
-        man_skill_dmg = c2.number_input("Skill Dmg (+)", value=8)
+        man_cd = c3.number_input("Cooldown (+)", value=0.0)
+        man_agi = c1.number_input("Agility (+)", value=0)
+        man_str = c2.number_input("Strength (+)", value=134)
+        man_skill_dmg = c3.number_input("Skill Dmg (+)", value=8)
+        st.subheader("Other Adjustments")
+        c1, c2 = st.columns(2)
         man_atk_bonus = c1.number_input("Atk Bonus (+)", value=0.0)
         man_car = c2.number_input("Car Collection Level", value=34)
 
