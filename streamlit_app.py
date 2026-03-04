@@ -18,7 +18,7 @@ DEFAULT_BASE_STATUS = {
     'Atk Bonus': 0, 'Strength': 685, 'Agility': 445, 'Str Bonus': 0,
     'Def Break Atk': 0, 'Def Break Bonus': 0, 'Penetration': 0, 'Extra Dmg': 0,
     'Def Reduction': 0, 'Multiplier': 0,
-    'Skill Dmg Boost': 0, 'Cooldown': 61.8, 'Class Dmg': 28.8,
+    'Skill Dmg Boost': 0, 'Cooldown': 61.8, 'Class Dmg': 0,
     'Skill Haste': 0, 'Special': 0
 }
 
