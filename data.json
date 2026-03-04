@@ -807,16 +807,19 @@
     "Destruction 3": {"Destruction": 3},
     "Swiftness 3": {"Swiftness": 3},
     "Combo 3": {"Combo": 3},
+    "Offensive 3": {"Offensive": 3},
     "Transcendence 2": {"Transcendence": 2},
     "Adaptation 2": {"Adaptation": 2},
     "Destruction 2": {"Destruction": 2},
     "Swiftness 2": {"Swiftness": 2},
     "Combo 2": {"Combo": 2},
+    "Offensive 2": {"Offensive": 2},
     "Transcendence 1": {"Transcendence": 1},
     "Adaptation 1": {"Adaptation": 1},
     "Destruction 1": {"Destruction": 1},
     "Swiftness 1": {"Swiftness": 1},
     "Combo 1": {"Combo": 1},
+    "Offensive 1": {"Offensive": 1},
 
     "Extraordinary 3": {"Extraordinary": 3},
     "Tempering 3": {"Tempering": 3},
@@ -1793,6 +1796,38 @@
       },
       "9": {
         "Dmg Amp": 6
+      }
+    },
+    "Offensive": {
+      "1": {
+        "Skill Haste": 10
+      },
+      "2": {
+        "Skill Haste": 10
+      },
+      "3": {
+        "Skill Haste": 10
+      },
+      "4": {
+        "Dmg Amp": 3
+      },
+      "5": {
+        "Skill Haste": 15,
+        "Dmg Amp": 2
+      },
+      "6": {
+        "Skill Haste": 15,
+        "Dmg Amp": 2
+      },
+      "7": {
+        "Dmg Amp": 3
+      },
+      "8": {
+        "Skill Haste": 20,
+        "Dmg Amp": 2
+      },
+      "9": {
+        "Dmg Amp": 9
       }
     },
 
