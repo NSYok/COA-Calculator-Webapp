@@ -1,8 +1,3 @@
-# Decompiled with PyLingual (https://pylingual.io)
-# Internal filename: 'utils_computer.py'
-# Bytecode version: 3.9.0beta5 (3425)
-# Source timestamp: 1970-01-01 UTC (0)
-
 from typing import Any
 
 def damage_compute(status_dict: dict[str, Any]) -> tuple[float, float]:
@@ -10,7 +5,6 @@ def damage_compute(status_dict: dict[str, Any]) -> tuple[float, float]:
     counter_multiplier = 1 + status_dict['Counter'] / 100
     dmg_amp = 1 + status_dict['Dmg Amp'] / 100
     
-    # เอาการคูณเนิร์ฟ 0.9 ออก เพื่อให้เป็นกลาง (ผู้เล่นกรอกค่าสุทธิมาเอง)
     skill_resonance = 1 + (status_dict['Skill Dmg'] + status_dict['Resonance Dmg']) / 100
     elem_dmg_multiplier = 1 + status_dict['Elem Dmg'] / 100
     
@@ -31,7 +25,6 @@ def damage_compute(status_dict: dict[str, Any]) -> tuple[float, float]:
     extra_dmg = 1 + status_dict['Extra Dmg'] / 100
     special = 1 + status_dict['Special'] / 100
     
-    # --- ปลดล็อกสเปกตรงนี้ (ลบ 1.08 ออก) เปลี่ยนเป็น 1 ---
     class_dmg = 1 + status_dict['Class Dmg'] / 100 
     
     multiplier = 1 + status_dict['Multiplier'] / 100
@@ -40,7 +33,6 @@ def damage_compute(status_dict: dict[str, Any]) -> tuple[float, float]:
     cooldown_reduction = 1 / (1 - status_dict['Cooldown Reduction'] / 100)
     effect_ratio = 1 + status_dict['Effect Ratio'] / (100 - status_dict['Effect Ratio'])
     
-    # คำนวณรวบยอด
     burst_damage = crit_multiplier * counter_multiplier * dmg_amp * skill_resonance * elem_dmg_multiplier * attack_zone * extra_dmg * special * class_dmg * multiplier * skill_dmg_boost * effect_ratio
     
     return (burst_damage, burst_damage * skill_haste * cooldown_reduction)
