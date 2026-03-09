@@ -1,8 +1,12 @@
 import streamlit as st
 import json
-import math
-import sys
 import os
+from typing import Any
+
+# --- Type Aliases ---
+StatusDict = dict[str, float]
+EquipmentList = list[str]
+ManualInputs = dict[str, Any]
 
 # Import functions from utils_computer.py
 try:
@@ -12,7 +16,7 @@ except ImportError:
     st.stop()
 
 # --- Default Base Status ---
-DEFAULT_BASE_STATUS = {
+DEFAULT_BASE_STATUS: StatusDict = {
     'Elem Boost': 0, 'Crit Rate': 0, 'Crit Dmg': 56, 'Counter': 0, 'Dmg Amp': 3,
     'Skill Dmg': 0, 'Resonance Dmg': 20, 'Elem Dmg': 0, 'Base Atk': 201,
     'Atk Bonus': 0, 'Strength': 685, 'Agility': 445, 'Str Bonus': 0,
@@ -29,18 +33,99 @@ if 'snapshot' not in st.session_state:
     st.session_state.snapshot = None
 
 @st.cache_data
-def load_data():
+def load_data() -> dict[str, Any]:
     try:
         with open('data.json', 'r', encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
+            _validate_data(data)
+            return data
     except FileNotFoundError:
         st.error("Could not find `data.json`. Please ensure the file is in the same directory.")
         return {"Single": {}, "Sets": {}}
+    except json.JSONDecodeError as e:
+        st.error(f"Invalid JSON in data.json: {e}")
+        return {"Single": {}, "Sets": {}}
+
+def _validate_data(data: dict[str, Any]) -> None:
+    required_keys = {"Single", "Sets"}
+    if not all(k in data for k in required_keys):
+        raise ValueError(f"data.json must contain keys: {required_keys}")
+    if not isinstance(data.get("Single"), dict):
+        raise ValueError("data.json 'Single' must be a dictionary")
+    if not isinstance(data.get("Sets"), dict):
+        raise ValueError("data.json 'Sets' must be a dictionary")
+
+@st.cache_data
+def _check_icon_exists(icon_name: str) -> bool:
+    icon_path = os.path.join("icon", f"{icon_name}.png")
+    return os.path.exists(icon_path)
+
+# --- Build Save/Load Functions ---
+BUILD_WIDGET_KEYS = [
+    # Equipment
+    's_weapon', 's_head', 's_armor', 's_hand', 's_shoes', 's_neck', 's_bracer', 's_ring', 's_seal', 's_amulet', 's_treasure',
+    # Emblems
+    'emb_weapon', 'emb_head', 'emb_armor', 'emb_hand', 'emb_legs', 'emb_shoes', 'emb_neck', 'emb_bracer', 'emb_ring', 'emb_seal', 'emb_amulet',
+    # Enhancements
+    'enh_head', 'enh_armor', 'enh_hand', 'enh_legs', 'enh_shoes', 'enh_weapon', 'enh_neck', 'enh_bracer', 'enh_ring', 'enh_seal', 'enh_amulet',
+    # Engravings
+    't_w_1', 't_w_2', 't_w_3', 't_h_1', 't_h_2', 't_h_3', 't_ar_1', 't_ar_2', 't_ar_3',
+    't_ha_1', 't_ha_2', 't_ha_3', 't_l_1', 't_l_2', 't_l_3', 't_s_1', 't_s_2', 't_s_3',
+    't_n_1', 't_n_2', 't_n_3', 't_b_1', 't_b_2', 't_b_3', 't_r_1', 't_r_2', 't_r_3',
+    't_se_1', 't_se_2', 't_se_3', 't_am_1', 't_am_2', 't_am_3',
+    # Pets
+    'pet_main', 'pet_star_1', 'pe11', 'pe12', 'pe13',
+    'pet_2', 'pet_star_2', 'pe21', 'pe22', 'pe23',
+    # Cards
+    'c1', 'c2', 'c3', 'c4',
+    # Fashion
+    'f_title', 'f_weapon', 'f_aura', 'f_head', 'f_cloth', 'f_acc', 'f_face', 'f_badge', 'f_foot',
+    'f_title_emb', 'f_weapon_emb', 'f_aura_emb', 'f_head_emb', 'f_cloth_emb', 'f_acc_emb', 'f_face_emb', 'f_badge_emb', 'f_foot_emb',
+    # Buffs
+    'in_buff_elem', 'in_buff_atk', 'in_buff_wine', 'in_buff_dragon', 'in_buff_wind', 'in_buff_mine', 'in_buff_counter',
+    # Manual inputs
+    'monster_def', 'dot_ratio', 'man_atk', 'man_crit_dmg', 'man_crit_rate', 'man_elem', 'man_cd', 'man_agi', 'man_str',
+    'man_skill_dmg', 'man_atk_bonus', 'man_car',
+    'boost_bufan4', 'boost_bufan6', 'boost_zhuoyue4', 'boost_zhuoyue7', 'boost_zhuoyue9', 'boost_chaoran9',
+    # Base stats
+    'b_atk', 'b_str', 'b_agi', 'b_crit_rate', 'b_crit_dmg', 'b_elem_boost', 'b_cd', 'b_skill_dmg',
+    'b_counter', 'b_dmg_amp', 'b_res_dmg', 'b_elem_dmg', 'b_def_break', 'b_pen',
+    'b_extra_dmg', 'b_class_dmg', 'b_skill_boost', 'b_skill_haste', 'b_special', 'b_multiplier'
+]
+
+def get_current_build() -> dict[str, Any]:
+    """Collect all current widget values into a build dict."""
+    build = {}
+    for key in BUILD_WIDGET_KEYS:
+        if key in st.session_state:
+            build[key] = st.session_state[key]
+    return build
+
+def load_build_from_upload():
+    """Callback to load build from file uploader and update session state."""
+    uploaded_file = st.session_state.get("_build_upload")
+    if uploaded_file is None:
+        return
+
+    try:
+        content = uploaded_file.read()
+        loaded_build = json.loads(content.decode('utf-8'))
+        for key, value in loaded_build.items():
+            if key in BUILD_WIDGET_KEYS:
+                st.session_state[key] = value
+        st.toast("Build loaded successfully!", icon="✅")
+    except Exception as e:
+        st.error(f"Failed to load build file: {e}")
+
+def save_build_to_json() -> str:
+    """Serialize current build to JSON string."""
+    build = get_current_build()
+    return json.dumps(build, indent=2)
 
 data = load_data()
 
 # --- Calculation Core (Ported from calculator_COA70.py) ---
-def run_calculation(equipment_list, manual_inputs):
+def run_calculation(equipment_list: EquipmentList, manual_inputs: ManualInputs) -> tuple[StatusDict, float, float]:
     """
     This function replicates the exact calculation logic from the `compute_damage`
     method in the original calculator_COA70.py file.
@@ -155,6 +240,12 @@ def run_calculation(equipment_list, manual_inputs):
 
     return final_status, burst_damage, total_damage
 
+# --- Fragment for Isolated Recalculation ---
+@st.fragment
+def calculation_fragment(equipment_list: EquipmentList, manual_inputs: ManualInputs) -> tuple[StatusDict, float, float]:
+    final_status, burst_damage, total_damage = run_calculation(equipment_list, manual_inputs)
+    return final_status, burst_damage, total_damage
+
 # --- UI Definition (Sidebar) ---
 st.title("Crystal Core Panel Calculator (Web App)")
 
@@ -164,12 +255,12 @@ with input_col:
     st.header("Build Configuration")
 
     # Helper to display selectbox with icon
-    def icon_selector(label, options, default, key, omit_trait=None):
+    def icon_selector(label: str, options: list[str], default: str, key: str, omit_trait: str | None = None) -> str:
         # Initialize session state for this key if not exists
         if key not in st.session_state:
             st.session_state[key] = default
         
-        def _update(k, v):
+        def _update(k: str, v: str) -> None:
             st.session_state[k] = v
 
         current_val = st.session_state[key]
@@ -177,10 +268,9 @@ with input_col:
         c1, c2 = st.columns([1, 3])
         
         with c1:
-            # Show current selection icon
-            icon_path = os.path.join("icon", f"{current_val}.png")
-            if os.path.exists(icon_path):
-                st.image(icon_path, width="stretch")
+            # Show current selection icon (using cached check)
+            if _check_icon_exists(current_val):
+                st.image(os.path.join("icon", f"{current_val}.png"), width="stretch")
             else:
                 st.markdown("<div style='height:60px; display:flex; align-items:center; justify-content:center; background:#f0f0f0; border-radius:5px;'>No Icon</div>", unsafe_allow_html=True)
         
@@ -197,9 +287,9 @@ with input_col:
                 for i, option in enumerate(options):
                     col = cols[i % 3]
                     with col:
-                        icon_path = os.path.join("icon", f"{option}.png")
-                        if os.path.exists(icon_path):
-                            st.image(icon_path, width="stretch")
+                        # Using cached icon check
+                        if _check_icon_exists(option):
+                            st.image(os.path.join("icon", f"{option}.png"), width="stretch")
                         
                         btn_text = option
                         if omit_trait and option.endswith(omit_trait):
@@ -216,7 +306,7 @@ with input_col:
         return st.session_state[key]
     
     # Helper for simple index retrieval (for non-icon fields)
-    def get_index(options, value):
+    def get_index(options: list[str], value: str) -> int:
         if value in options:
             return options.index(value)
         return 0
@@ -583,76 +673,101 @@ manual_inputs = {
 
 # --- Run Calculation and Display Results ---
 try:
-    final_status, burst_damage, total_damage = run_calculation(equipment_list, manual_inputs)
+    # Pass all inputs to fragment for isolated recalculation
+    result = calculation_fragment(equipment_list, manual_inputs)
+    
+    if result:
+        final_status, burst_damage, total_damage = result
 
-    # Initialize snapshot on first run so stats are displayed immediately
-    if st.session_state.snapshot is None:
-        st.session_state.snapshot = (final_status, burst_damage, total_damage)
-
-    with result_col:
-        st.header("Calculation Results")
-
-        # Main Damage Metrics
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Burst Damage", f"{int(burst_damage):,}")
-        col2.metric("Sustained Damage (DPS)", f"{int(total_damage):,}")
-        col3.metric("CD rate", f"{final_status['Cooldown Reduction']:.1f}%")
-
-        # Comparison Feature
-        c1, c2 = st.columns(2)
-        if c1.button("Save Snapshot", use_container_width=True):
+        # Initialize snapshot on first run so stats are displayed immediately
+        if st.session_state.snapshot is None:
             st.session_state.snapshot = (final_status, burst_damage, total_damage)
-        
-        if c2.button("Clear Snapshot", use_container_width=True):
-            st.session_state.snapshot = None
 
-        if st.session_state.snapshot:
-            old_total = st.session_state.snapshot[2]
-            if old_total > 0:
-                diff = (total_damage - old_total) / old_total * 100
-                c2.metric("Change vs Snapshot", f"{diff:+.2f}%")
+        with result_col:
+            st.header("Calculation Results")
 
-        # Detailed Stats Display
-        st.subheader("Detailed Panel Stats")
-        # Map internal keys to user-friendly labels
-        stats_to_show = [
-            ('Attack (ATK)', 'Atk'), ('Crit Rate', 'Crit Rate'), ('Crit DMG', 'Crit Dmg'), ('Elem', 'Elem Boost'),
-            ('ENH DMG', 'Elem Dmg'), ('Dmg Bonus', 'Dmg Amp'), ('Skill DMG', 'Skill Dmg'), ('Dmg Debuff', 'Counter'),
-            ('Def Shred', 'Def Break Atk'), ('PEN', 'Penetration'), ('ASPD', 'Skill Haste'), ('Cooldown', 'Cooldown'),
-            ('Additional', 'Extra Dmg'), ('DMG during Resonance', 'Resonance Dmg'),
-            ('Class DMG Bonus', 'Class Dmg'), ('Skill DMG Boost', 'Skill Dmg Boost'), ('Special Stats', 'Special'), ('Skill Ratio', 'Multiplier')
-        ]
+            # Main Damage Metrics
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Burst Damage", f"{int(burst_damage):,}")
+            col2.metric("Sustained Damage (DPS)", f"{int(total_damage):,}")
+            col3.metric("CD rate", f"{final_status['Cooldown Reduction']:.1f}%")
 
-        if st.session_state.snapshot:
-            snapshot_status = st.session_state.snapshot[0]
+            # Comparison Feature
             c1, c2 = st.columns(2)
-            with c1: st.caption("Current")
-            with c2: st.caption("Snapshot")
-            for label, key in stats_to_show:
-                val = final_status.get(key, 0)
-                val_snap = snapshot_status.get(key, 0)
-                delta = val - val_snap
-                
-                with st.container():
-                    r1, r2 = st.columns(2)
+            if c1.button("Save Snapshot", use_container_width=True):
+                st.session_state.snapshot = (final_status, burst_damage, total_damage)
+            
+            if c2.button("Clear Snapshot", use_container_width=True):
+                st.session_state.snapshot = None
+
+            if st.session_state.snapshot:
+                old_total = st.session_state.snapshot[2]
+                if old_total > 0:
+                    diff = (total_damage - old_total) / old_total * 100
+                    c2.metric("Change vs Snapshot", f"{diff:+.2f}%")
+
+            # Save/Load Build
+            st.subheader("Build Management")
+            
+            # Save Build
+            build_json = save_build_to_json()
+            build_filename = f"build_{int(burst_damage)}_{int(total_damage)}.json"
+            st.download_button(
+                label="💾 Save Build",
+                data=build_json,
+                file_name=build_filename,
+                mime="application/json",
+                use_container_width=True
+            )
+            
+            # Load Build
+            st.file_uploader(
+                "📂 Load Build",
+                type=["json"],
+                key="_build_upload",
+                on_change=load_build_from_upload)
+
+            # Detailed Stats Display
+            st.subheader("Detailed Panel Stats")
+            # Map internal keys to user-friendly labels
+            stats_to_show = [
+                ('Attack (ATK)', 'Atk'), ('Crit Rate', 'Crit Rate'), ('Crit DMG', 'Crit Dmg'), ('Elem', 'Elem Boost'),
+                ('ENH DMG', 'Elem Dmg'), ('Dmg Bonus', 'Dmg Amp'), ('Skill DMG', 'Skill Dmg'), ('Dmg Debuff', 'Counter'),
+                ('Def Shred', 'Def Break Atk'), ('PEN', 'Penetration'), ('ASPD', 'Skill Haste'), ('Cooldown', 'Cooldown'),
+                ('Additional', 'Extra Dmg'), ('DMG during Resonance', 'Resonance Dmg'),
+                ('Class DMG Bonus', 'Class Dmg'), ('Skill DMG Boost', 'Skill Dmg Boost'), ('Special Stats', 'Special'), ('Skill Ratio', 'Multiplier')
+            ]
+
+            if st.session_state.snapshot:
+                snapshot_status = st.session_state.snapshot[0]
+                c1, c2 = st.columns(2)
+                with c1: st.caption("Current")
+                with c2: st.caption("Snapshot")
+                for label, key in stats_to_show:
+                    val = final_status.get(key, 0)
+                    val_snap = snapshot_status.get(key, 0)
+                    delta = val - val_snap
                     
-                    # เช็คว่าค่าเปลี่ยนเป็น 0 หรือไม่ (ปัดเศษ 1 ตำแหน่งเพื่อป้องกันปัญหาทศนิยมลอยตัว)
-                    if round(delta, 1) == 0.0:
-                        # สร้าง HTML จำลองหน้าตา st.metric: สีเหลือง + ไม่มีลูกศร
-                        r1.markdown(f"""
-                            <div style="display: flex; flex-direction: column; margin-bottom: 0.8rem;">
-                                <span style="font-size: 0.875rem; color: rgba(250, 250, 250, 0.6);">{label}</span>
-                                <span style="font-size: 2.25rem; font-weight: 400; color: rgb(250, 250, 250); line-height: 1.2;">{val:,.1f}</span>
-                                <div style="background-color: rgba(255, 193, 7, 0.15); color: rgb(255, 193, 7); padding: 0.125rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; font-weight: 500; width: fit-content; margin-top: 0.25rem;">
-                                    0.0
-                                </div>
-                            </div>
-                        """, unsafe_allow_html=True)
-                    else:
-                        # ถ้าค่าเปลี่ยนไป (เพิ่ม/ลด) ให้ใช้ st.metric ปกติของ Streamlit
-                        r1.metric(label, f"{val:,.1f}", delta=f"{delta:,.1f}")
+                    with st.container():
+                        r1, r2 = st.columns(2)
                         
-                    r2.metric(label, f"{val_snap:,.1f}")
+                        # เช็คว่าค่าเปลี่ยนเป็น 0 หรือไม่ (ปัดเศษ 1 ตำแหน่งเพื่อป้องกันปัญหาทศนิยมลอยตัว)
+                        if round(delta, 1) == 0.0:
+                            # สร้าง HTML จำลองหน้าตา st.metric: สีเหลือง + ไม่มีลูกศร
+                            r1.markdown(f"""
+                                <div style="display: flex; flex-direction: column; margin-bottom: 0.8rem;">
+                                    <span style="font-size: 0.875rem; color: rgba(250, 250, 250, 0.6);">{label}</span>
+                                    <span style="font-size: 2.25rem; font-weight: 400; color: rgb(250, 250, 250); line-height: 1.2;">{val:,.1f}</span>
+                                    <div style="background-color: rgba(255, 193, 7, 0.15); color: rgb(255, 193, 7); padding: 0.125rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; font-weight: 500; width: fit-content; margin-top: 0.25rem;">
+                                        0.0
+                                    </div>
+                                </div>
+                            """, unsafe_allow_html=True)
+                        else:
+                            # ถ้าค่าเปลี่ยนไป (เพิ่ม/ลด) ให้ใช้ st.metric ปกติของ Streamlit
+                            r1.metric(label, f"{val:,.1f}", delta=f"{delta:,.1f}")
+                            
+                        r2.metric(label, f"{val_snap:,.1f}")
 
 except Exception as e:
     st.error(f"An error occurred during calculation: {e}")
