@@ -1,10 +1,11 @@
 # Decompiled with PyLingual (https://pylingual.io)
 # Internal filename: 'utils_computer.py'
 # Bytecode version: 3.9.0beta5 (3425)
-# Source timestamp: 1970-01-01 00:00:00 UTC (0)
+# Source timestamp: 1970-01-01 UTC (0)
 
-import math
-def damage_compute(status_dict: dict):
+from typing import Any
+
+def damage_compute(status_dict: dict[str, Any]) -> tuple[float, float]:
     crit_multiplier = 1 + min(status_dict['Crit Rate'] / 100, 1) * (status_dict['Crit Dmg'] / 100)
     counter_multiplier = 1 + status_dict['Counter'] / 100
     dmg_amp = 1 + status_dict['Dmg Amp'] / 100
@@ -13,14 +14,19 @@ def damage_compute(status_dict: dict):
     skill_resonance = 1 + (status_dict['Skill Dmg'] + status_dict['Resonance Dmg']) / 100
     elem_dmg_multiplier = 1 + status_dict['Elem Dmg'] / 100
     
-    # --- ปรับสูตร Defense ใหม่ให้ถูกต้องตามทฤษฎีMultiplier ---
-    # คำนวณพลังป้องกันของศัตรูหลังโดนหักลบ (หัก % ก่อน แล้วค่อยหักค่า Flat)
-    effective_def = status_dict['Monster Def'] * (1 - status_dict.get('Def Reduction', 0) / 100) - status_dict.get('Penetration', 0)
-    effective_def = max(0, effective_def) # ป้องกันค่าติดลบ
-    def_multiplier = 3500 / (3500 + effective_def)
+    # --- Fixed Defense Formula (matching game mechanics) ---
+    # Damage Reduction % = Defense / (3000 + Defense)
+    # Where Defense = Monster Def * (1 - Physical PEN%)
+    # Def Reduction = Physical PEN%
+    # Def Break Atk = PDEF Shred (flat)
+    # Penetration = Additional flat defense reduction
+    def_after_pen = status_dict['Monster Def'] * (1 - status_dict.get('Def Reduction', 0) / 100) - status_dict.get('Penetration', 0)
+    def_after_pen = max(0, def_after_pen)  # Prevent negative
+    dmg_reduction_pct = def_after_pen / (3000 + def_after_pen)
     
-    # นำมาคูณเป็นตัวคูณโจมตี ไม่ใช่เอาไปบวกกันดื้อๆ
-    attack_zone = status_dict['Atk'] * def_multiplier 
+    # Actual Attack = Total PATK * (1 - Damage Reduction %) + PDEF Shred
+    # PDEF Shred = Def Break Atk
+    attack_zone = status_dict['Atk'] * (1 - dmg_reduction_pct) + status_dict.get('Def Break Atk', 0)
     
     extra_dmg = 1 + status_dict['Extra Dmg'] / 100
     special = 1 + status_dict['Special'] / 100
@@ -38,21 +44,23 @@ def damage_compute(status_dict: dict):
     burst_damage = crit_multiplier * counter_multiplier * dmg_amp * skill_resonance * elem_dmg_multiplier * attack_zone * extra_dmg * special * class_dmg * multiplier * skill_dmg_boost * effect_ratio
     
     return (burst_damage, burst_damage * skill_haste * cooldown_reduction)
-def add_equipment(status_dict: dict, equipment: dict):
+def add_equipment(status_dict: dict[str, Any], equipment: dict[str, Any]) -> dict[str, Any]:
     for key in equipment.keys():
         if key not in status_dict.keys():
             status_dict[key] = equipment[key]
         else:
             status_dict[key] = status_dict[key] + equipment[key]
     return status_dict
-def remove_equipment(status_dict: dict, equipment: dict):
+
+def remove_equipment(status_dict: dict[str, Any], equipment: dict[str, Any]) -> dict[str, Any]:
     for key in equipment.keys():
         if key not in status_dict.keys():
             status_dict[key] = equipment[key]
         else:
             status_dict[key] = status_dict[key] - equipment[key]
     return status_dict
-def outfit_count(status: dict, outfit_dict: dict):
+
+def outfit_count(status: dict[str, Any], outfit_dict: dict[str, Any]) -> list[tuple[str, str]]:
     outfits = []
     for outfit_name in outfit_dict.keys():
         if outfit_name in status.keys():
