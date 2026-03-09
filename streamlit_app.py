@@ -307,10 +307,11 @@ with input_col:
     enh_opts_hp = [f'+{i}(HP)' for i in range(15, 26)] + ['None']
     enh_opts_wep = [f'+{i}(Weapon)' for i in range(18, 26)] + ['None']
     enh_opts_lr = [f'+{i}(L_R Slot)' for i in range(15, 26)] + ['None']
-    engrave_transcendence = ['Transcendence 3', 'Adaptation 3', 'Destruction 3', 'Swiftness 3', 'Combo 3','Offensive 3', 'Transcendence 2', 'Adaptation 2', 'Destruction 2', 'Swiftness 2', 'Combo 2','Offensive 2', 'Transcendence 1', 'Adaptation 1', 'Destruction 1', 'Swiftness 1', 'Combo 1','Offensive 1', 'None']
-    engrave_extraordinary = ['Extraordinary 3', 'Tempering 3', 'High-Tier 3', 'Status Break 3', 'Basic 3', 'Pierce 3', 'Fortification 3', 'Extraordinary 2', 'Tempering 2', 'High-Tier 2', 'Status Break 2', 'Basic 2', 'Pierce 2', 'Fortification 2', 'Extraordinary 1', 'Tempering 1', 'High-Tier 1', 'Status Break 1', 'Basic 1', 'Pierce 1', 'Fortification 1', 'None']
-    engrave_excellence = ['Excellence 3', 'Smite 3', 'Alliance 3', 'Unbreakable 3', 'Excellence 2', 'Smite 2', 'Alliance 2', 'Unbreakable 2', 'Excellence 1', 'Smite 1', 'Alliance 1', 'Unbreakable 1', 'None']
-    engrave_elem_master = ['Elem Master 3', 'Challenger 3', 'Resonance 3', 'Evasion 3', 'Elem Resist 3', 'Recovery 3', 'Elem Master 2', 'Challenger 2', 'Resonance 2', 'Evasion 2', 'Elem Resist 2', 'Recovery 2', 'Elem Master 1', 'Challenger 1', 'Resonance 1', 'Evasion 1', 'Elem Resist 1', 'Recovery 1', 'None']
+    engrave_HGS = ['Transcendence 3', 'Transcendence 2', 'Transcendence 1', 'Adaptation 3', 'Adaptation 2', 'Adaptation 1', 'Destruction 3', 'Destruction 2', 'Destruction 1', 'Swiftness 3', 'Swiftness 2', 'Swiftness 1', 'Combo 3', 'Combo 2', 'Combo 1', 'Offensive 3', 'Offensive 2', 'Offensive 1', 'Suppress 3', 'Suppress 2', 'Suppress 1', 'Unyielding 3', 'Unyielding 2', 'Unyielding 1', 'Sprint 3', 'Sprint 2', 'Sprint 1', 'None']
+    engrave_BP = ['Extraordinary 3', 'Extraordinary 2', 'Extraordinary 1', 'Quenching 3', 'Quenching 2', 'Quenching 1', 'Advanced Tech 3', 'Advanced Tech 2', 'Advanced Tech 1', 'Status Break 3', 'Status Break 2', 'Status Break 1', 'Basic 3', 'Basic 2', 'Basic 1', 'Pierce 3', 'Pierce 2', 'Pierce 1', 'Siege 3', 'Siege 2', 'Siege 1', 'Charge 3', 'Charge 2', 'Charge 1', 'Wall Break 3', 'Wall Break 2', 'Wall Break 1', 'None']
+    engrave_WSA = ['Excellence 3', 'Excellence 2', 'Excellence 1', 'Smite 3', 'Smite 2', 'Smite 1', 'Alliance 3', 'Alliance 2', 'Alliance 1', 'Unbreakable 3', 'Unbreakable 2', 'Unbreakable 1', 'Adversity 3', 'Adversity 2', 'Adversity 1', 'Fullness 3', 'Fullness 2', 'Fullness 1', 'Air Supremacy 3', 'Air Supremacy 2', 'Air Supremacy 1', 'None']
+    engrave_RBN = ['Elem Master 3', 'Elem Master 2', 'Elem Master 1', 'Challenger 3', 'Challenger 2', 'Challenger 1', 'Resonance 3', 'Resonance 2', 'Resonance 1', 'Evasion 3', 'Evasion 2', 'Evasion 1', 'Elem Resist 3', 'Elem Resist 2', 'Elem Resist 1', 'Recovery 3', 'Recovery 2', 'Recovery 1', 'Solitary 3', 'Solitary 2', 'Solitary 1', 'Lightning Summon 3', 'Lightning Summon 2', 'Lightning Summon 1', 'None']
+    
     card_list = ['Loyal Partner', 'The evil hook', 'Void Shadow', 'Chrome Arms', 'Ancient Guardian', 'Deep Space Swarm', 'Realm Creature', 'Magic Era', 'Dark Realm Madman', 'Light Chaser', 'Clockwork Legion', 'Mech Empire', 'Beast Legion', 'Gloomy Forbidden Area', 'Park Guard', 'None']
 
     tab_gear, tab_enhance, tab_pet, tab_fashion, tab_manual = st.tabs(
@@ -324,9 +325,9 @@ with input_col:
         with c1: s_weapon = icon_selector("Equip", opts_weapon, "True Fate Sickle (Withered)", "s_weapon")
         with c2: emb_weapon = icon_selector("Emblem", ['Elem Mark', 'Verbena', 'Hawk', 'Demon Heart Kraken', 'None'], "Elem Mark", "emb_weapon", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_weapon_1 = icon_selector("Engrave 1", engrave_excellence, "Excellence 3", "t_w_1")
-        with c2: t_weapon_2 = icon_selector("Engrave 2", engrave_excellence, "Unbreakable 3", "t_w_2")
-        with c3: t_weapon_3 = icon_selector("Engrave 3", engrave_excellence, "Smite 3", "t_w_3")
+        with c1: t_weapon_1 = icon_selector("Engrave 1", engrave_WSA, "Excellence 3", "t_w_1")
+        with c2: t_weapon_2 = icon_selector("Engrave 2", engrave_WSA, "Unbreakable 3", "t_w_2")
+        with c3: t_weapon_3 = icon_selector("Engrave 3", engrave_WSA, "Smite 3", "t_w_3")
         st.markdown("---")
 
         # Head
@@ -335,9 +336,9 @@ with input_col:
         with c1: s_head = icon_selector("Equip", [f"{s} Head" for s in opts_armor_set], "Black Feather Head", "s_head", "Head")
         with c2: emb_head = icon_selector("Emblem", ['Soldier', 'Chariot', 'King', 'Plague', 'Glimmer Venom Wing', 'Andre', 'Isaac', 'None'], "Soldier", "emb_head", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_head_1 = icon_selector("Engrave 1", engrave_transcendence, "Destruction 3", "t_h_1")
-        with c2: t_head_2 = icon_selector("Engrave 2", engrave_transcendence, "Adaptation 3", "t_h_2")
-        with c3: t_head_3 = icon_selector("Engrave 3", engrave_transcendence, "Combo 1", "t_h_3")
+        with c1: t_head_1 = icon_selector("Engrave 1", engrave_HGS, "Destruction 3", "t_h_1")
+        with c2: t_head_2 = icon_selector("Engrave 2", engrave_HGS, "Adaptation 3", "t_h_2")
+        with c3: t_head_3 = icon_selector("Engrave 3", engrave_HGS, "Combo 1", "t_h_3")
         st.markdown("---")
 
         # Armor
@@ -346,9 +347,9 @@ with input_col:
         with c1: s_armor = icon_selector("Equip", [f"{s} Armor" for s in opts_armor_set], "Black Feather Armor", "s_armor", "Armor")
         with c2: emb_armor = icon_selector("Emblem", ['Eclipse Creator', 'Centaur', 'Bishop', 'King', 'Charlotte', 'Heavy Shield', 'Odisha', 'None'], "King", "emb_armor", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_armor_1 = icon_selector("Engrave 1", engrave_extraordinary, "Extraordinary 3", "t_ar_1")
-        with c2: t_armor_2 = icon_selector("Engrave 2", engrave_extraordinary, "Tempering 3", "t_ar_2")
-        with c3: t_armor_3 = icon_selector("Engrave 3", engrave_extraordinary, "Basic 1", "t_ar_3")
+        with c1: t_armor_1 = icon_selector("Engrave 1", engrave_BP, "Extraordinary 3", "t_ar_1")
+        with c2: t_armor_2 = icon_selector("Engrave 2", engrave_BP, "Quenching 3", "t_ar_2")
+        with c3: t_armor_3 = icon_selector("Engrave 3", engrave_BP, "Basic 1", "t_ar_3")
         st.markdown("---")
 
         # Hand
@@ -357,9 +358,9 @@ with input_col:
         with c1: s_hand = icon_selector("Equip", [f"{s} Hand" for s in opts_armor_set], "Black Feather Hand", "s_hand", "Hand")
         with c2: emb_hand = icon_selector("Emblem", ['Soldier', 'Centaur', 'Bishop', 'Chariot', 'Queen', 'Skull', 'Bogit', 'Ice Fist (Vic)', 'Isaac', 'None'], "Bishop", "emb_hand", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_hand_1 = icon_selector("Engrave 1", engrave_transcendence, "Destruction 3", "t_ha_1")
-        with c2: t_hand_2 = icon_selector("Engrave 2", engrave_transcendence, "Adaptation 3", "t_ha_2")
-        with c3: t_hand_3 = icon_selector("Engrave 3", engrave_transcendence, "Combo 1", "t_ha_3")
+        with c1: t_hand_1 = icon_selector("Engrave 1", engrave_HGS, "Destruction 3", "t_ha_1")
+        with c2: t_hand_2 = icon_selector("Engrave 2", engrave_HGS, "Adaptation 3", "t_ha_2")
+        with c3: t_hand_3 = icon_selector("Engrave 3", engrave_HGS, "Combo 1", "t_ha_3")
         st.markdown("---")
 
         # Legs
@@ -368,9 +369,9 @@ with input_col:
         with c1: s_legs = icon_selector("Equip", [f"{s} Legs" for s in opts_armor_set], "Black Feather Legs", "s_legs", "Legs")
         with c2: emb_legs = icon_selector("Emblem", ['Mars', 'Venom Behemoth', 'Goramos', 'Odisha', 'None'], "Goramos", "emb_legs", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_legs_1 = icon_selector("Engrave 1", engrave_extraordinary, "Extraordinary 3", "t_l_1")
-        with c2: t_legs_2 = icon_selector("Engrave 2", engrave_extraordinary, "Basic 3", "t_l_2")
-        with c3: t_legs_3 = icon_selector("Engrave 3", engrave_extraordinary, "Tempering 1", "t_l_3")
+        with c1: t_legs_1 = icon_selector("Engrave 1", engrave_BP, "Extraordinary 3", "t_l_1")
+        with c2: t_legs_2 = icon_selector("Engrave 2", engrave_BP, "Basic 3", "t_l_2")
+        with c3: t_legs_3 = icon_selector("Engrave 3", engrave_BP, "Quenching 1", "t_l_3")
         st.markdown("---")
 
         # Shoes
@@ -379,9 +380,9 @@ with input_col:
         with c1: s_shoes = icon_selector("Equip", [f"{s} Shoes" for s in opts_armor_set], "Black Feather Shoes", "s_shoes", "Shoes")
         with c2: emb_shoes = icon_selector("Emblem", ['Eclipse Creator', 'Queen', 'Famion', 'Touch of Greed', 'Electric Whip (Joker)', 'Isaac', 'None'], "Eclipse Creator", "emb_shoes", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_shoes_1 = icon_selector("Engrave 1", engrave_transcendence, "Destruction 3", "t_s_1")
-        with c2: t_shoes_2 = icon_selector("Engrave 2", engrave_transcendence, "Adaptation 3", "t_s_2")
-        with c3: t_shoes_3 = icon_selector("Engrave 3", engrave_transcendence, "Combo 1", "t_s_3")
+        with c1: t_shoes_1 = icon_selector("Engrave 1", engrave_HGS, "Destruction 3", "t_s_1")
+        with c2: t_shoes_2 = icon_selector("Engrave 2", engrave_HGS, "Adaptation 3", "t_s_2")
+        with c3: t_shoes_3 = icon_selector("Engrave 3", engrave_HGS, "Combo 1", "t_s_3")
         st.markdown("---")
 
         # Necklace
@@ -390,9 +391,9 @@ with input_col:
         with c1: s_neck = icon_selector("Equip", [f"{s} Necklace" for s in opts_acc_set], "Holy Glory Necklace", "s_neck", "Necklace")
         with c2: emb_neck = icon_selector("Emblem", ['Michael', 'Sword of Power', 'Electric Whip (Joker)', 'Thunder Light', 'Gorga', 'None'], "Thunder Light", "emb_neck", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_neck_1 = icon_selector("Engrave 1", engrave_elem_master, "Elem Master 1", "t_n_1")
-        with c2: t_neck_2 = icon_selector("Engrave 2", engrave_elem_master, "Elem Resist 3", "t_n_2")
-        with c3: t_neck_3 = icon_selector("Engrave 3", engrave_elem_master, "Challenger 3", "t_n_3")
+        with c1: t_neck_1 = icon_selector("Engrave 1", engrave_RBN, "Elem Master 1", "t_n_1")
+        with c2: t_neck_2 = icon_selector("Engrave 2", engrave_RBN, "Elem Resist 3", "t_n_2")
+        with c3: t_neck_3 = icon_selector("Engrave 3", engrave_RBN, "Challenger 3", "t_n_3")
         st.markdown("---")
 
         # Bracer
@@ -401,9 +402,9 @@ with input_col:
         with c1: s_bracer = icon_selector("Equip", [f"{s} Bracer" for s in opts_acc_set], "Holy Glory Bracer", "s_bracer", "Bracer")
         with c2: emb_bracer = icon_selector("Emblem", ['Michael', 'Sword of Power', 'Ice Fist (Vic)', 'Thunder Light', 'Gorga', 'None'], "Michael", "emb_bracer", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_bracer_1 = icon_selector("Engrave 1", engrave_elem_master, "Elem Master 1", "t_b_1")
-        with c2: t_bracer_2 = icon_selector("Engrave 2", engrave_elem_master, "Elem Resist 3", "t_b_2")
-        with c3: t_bracer_3 = icon_selector("Engrave 3", engrave_elem_master, "Challenger 3", "t_b_3")
+        with c1: t_bracer_1 = icon_selector("Engrave 1", engrave_RBN, "Elem Master 1", "t_b_1")
+        with c2: t_bracer_2 = icon_selector("Engrave 2", engrave_RBN, "Elem Resist 3", "t_b_2")
+        with c3: t_bracer_3 = icon_selector("Engrave 3", engrave_RBN, "Challenger 3", "t_b_3")
         st.markdown("---")
 
         # Ring
@@ -412,9 +413,9 @@ with input_col:
         with c1: s_ring = icon_selector("Equip", [f"{s} Ring" for s in opts_acc_set], "Holy Glory Ring", "s_ring", "Ring")
         with c2: emb_ring = icon_selector("Emblem", ['Mars', 'Andre', 'Gorga', 'None'], "Mars", "emb_ring", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_ring_1 = icon_selector("Engrave 1", engrave_elem_master, "Elem Master 2", "t_r_1")
-        with c2: t_ring_2 = icon_selector("Engrave 2", engrave_elem_master, "Elem Resist 2", "t_r_2")
-        with c3: t_ring_3 = icon_selector("Engrave 3", engrave_elem_master, "Challenger 3", "t_r_3")
+        with c1: t_ring_1 = icon_selector("Engrave 1", engrave_RBN, "Elem Master 2", "t_r_1")
+        with c2: t_ring_2 = icon_selector("Engrave 2", engrave_RBN, "Elem Resist 2", "t_r_2")
+        with c3: t_ring_3 = icon_selector("Engrave 3", engrave_RBN, "Challenger 3", "t_r_3")
         st.markdown("---")
 
         # Seal
@@ -423,9 +424,9 @@ with input_col:
         with c1: s_seal = icon_selector("Equip", [f"{s} Seal" for s in opts_acc_set], "Holy Glory Seal", "s_seal", "Seal")
         with c2: emb_seal = icon_selector("Emblem", ['Azrael', 'Plague', 'Puzzle', 'Goramos', 'None'], "Azrael", "emb_seal", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_seal_1 = icon_selector("Engrave 1", engrave_excellence, "Excellence 3", "t_se_1")
-        with c2: t_seal_2 = icon_selector("Engrave 2", engrave_excellence, "Unbreakable 3", "t_se_2")
-        with c3: t_seal_3 = icon_selector("Engrave 3", engrave_excellence, "Smite 1", "t_se_3")
+        with c1: t_seal_1 = icon_selector("Engrave 1", engrave_WSA, "Excellence 3", "t_se_1")
+        with c2: t_seal_2 = icon_selector("Engrave 2", engrave_WSA, "Unbreakable 3", "t_se_2")
+        with c3: t_seal_3 = icon_selector("Engrave 3", engrave_WSA, "Smite 1", "t_se_3")
         st.markdown("---")
 
         # Amulet
@@ -434,9 +435,9 @@ with input_col:
         with c1: s_amulet = icon_selector("Equip", [f"{s} Amulet" for s in opts_acc_set], "Holy Glory Amulet", "s_amulet", "Amulet")
         with c2: emb_amulet = icon_selector("Emblem", ['Azrael', 'Famion', 'Puzzle', 'Heavy Shield', 'None'], "Heavy Shield", "emb_amulet", "Emblem")
         c1, c2, c3 = st.columns(3)
-        with c1: t_amulet_1 = icon_selector("Engrave 1", engrave_excellence, "Excellence 3", "t_am_1")
-        with c2: t_amulet_2 = icon_selector("Engrave 2", engrave_excellence, "Unbreakable 2", "t_am_2")
-        with c3: t_amulet_3 = icon_selector("Engrave 3", engrave_excellence, "Smite 2", "t_am_3")
+        with c1: t_amulet_1 = icon_selector("Engrave 1", engrave_WSA, "Excellence 3", "t_am_1")
+        with c2: t_amulet_2 = icon_selector("Engrave 2", engrave_WSA, "Unbreakable 2", "t_am_2")
+        with c3: t_amulet_3 = icon_selector("Engrave 3", engrave_WSA, "Smite 2", "t_am_3")
         st.markdown("---")
 
         # Treasure
