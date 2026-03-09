@@ -8,7 +8,6 @@ StatusDict = dict[str, float]
 EquipmentList = list[str]
 ManualInputs = dict[str, Any]
 
-# Import functions from utils_computer.py
 try:
     from utils_computer import damage_compute, add_equipment, outfit_count
 except ImportError:
@@ -124,7 +123,7 @@ def save_build_to_json() -> str:
 
 data = load_data()
 
-# --- Calculation Core (Ported from calculator_COA70.py) ---
+# --- Calculation Core ---
 def run_calculation(equipment_list: EquipmentList, manual_inputs: ManualInputs) -> tuple[StatusDict, float, float]:
     """
     This function replicates the exact calculation logic from the `compute_damage`
@@ -166,24 +165,19 @@ def run_calculation(equipment_list: EquipmentList, manual_inputs: ManualInputs) 
         set_name, count = outfit
         key = set_name + count
 
-        # 1. แอดสเตตัสพื้นฐานของชุดเซ็ตก่อนเสมอ (แก้บั๊กที่ของเดิมใส่ else แล้วข้าม)
         if set_name in data['Sets'] and count in data['Sets'][set_name]:
             add_equipment(base_status, data['Sets'][set_name][count])
 
-        # 2. นำค่า Custom Tech มาทับซ้อนเอฟเฟกต์ โดยแยกโซนให้ถูกต้อง
         if key == 'Extraordinary4' and manual_inputs['boost_bufan4'] > 0:
-            special_boost *= 1 + manual_inputs['boost_bufan4'] / 100  # โซนแยก (Independent)
+            special_boost *= 1 + manual_inputs['boost_bufan4'] / 100
         elif key == 'Extraordinary6' and manual_inputs['boost_bufan6'] > 0:
-            special_boost *= 1 + manual_inputs['boost_bufan6'] / 100  # โซนแยก (Independent)
+            special_boost *= 1 + manual_inputs['boost_bufan6'] / 100
         elif key == 'Excellence4' and manual_inputs['boost_zhuoyue4'] > 0:
-            special_boost *= 1 + manual_inputs['boost_zhuoyue4'] / 100  # โซนแยก (Independent)
+            special_boost *= 1 + manual_inputs['boost_zhuoyue4'] / 100
             
-        # --- จัดโซน 7 กับ 9 ใหม่ ---
         elif key == 'Excellence7' and manual_inputs['boost_zhuoyue7'] > 0:
-            # Excellence 7 (卓越7) เป็นโซนทั่วไป (Damage Bonus Zone)
             base_status['Dmg Amp'] += manual_inputs['boost_zhuoyue7'] 
         elif key == 'Excellence9' and manual_inputs['boost_zhuoyue9'] > 0:
-            # Excellence 9 (卓越9) เป็นโบนัสความเสียหายเพิ่มเติมธาตุ (Extra Dmg Zone)
             base_status['Extra Dmg'] += manual_inputs['boost_zhuoyue9']
             
         elif key == 'Transcendence9' and manual_inputs['boost_chaoran9'] > 0:
@@ -254,7 +248,6 @@ input_col, result_col = st.columns([2, 1])
 with input_col:
     st.header("Build Configuration")
 
-    # Helper to display selectbox with icon
     def icon_selector(label: str, options: list[str], default: str, key: str, omit_trait: str | None = None) -> str:
         # Initialize session state for this key if not exists
         if key not in st.session_state:
@@ -268,7 +261,6 @@ with input_col:
         c1, c2 = st.columns([1, 3])
         
         with c1:
-            # Show current selection icon (using cached check)
             if _check_icon_exists(current_val):
                 st.image(os.path.join("icon", f"{current_val}.png"), width="stretch")
             else:
@@ -280,14 +272,11 @@ with input_col:
             if omit_trait and current_val.endswith(omit_trait):
                 display_val = current_val[:-len(omit_trait)].strip()
 
-            # Expander for selection
             with st.expander(display_val):
-                # Create a grid for options
-                cols = st.columns(3) # 3 items per row inside expander
+                cols = st.columns(3)
                 for i, option in enumerate(options):
                     col = cols[i % 3]
                     with col:
-                        # Using cached icon check
                         if _check_icon_exists(option):
                             st.image(os.path.join("icon", f"{option}.png"), width="stretch")
                         
@@ -305,13 +294,12 @@ with input_col:
             
         return st.session_state[key]
     
-    # Helper for simple index retrieval (for non-icon fields)
     def get_index(options: list[str], value: str) -> int:
         if value in options:
             return options.index(value)
         return 0
 
-    # Define Options from calculator_COA70.py
+    # Define Options
     opts_armor_set = ['Black Feather', 'Glimmer', 'Avarice', 'Venom', 'Butterfly', 'Demon Heart', 'Cursed', 'None']
     opts_acc_set = ['Solar', 'Holy Glory', 'Demon Shadow', 'None']
     opts_weapon = ['True Fate Sickle (Withered)', 'Abyssal Gaze', 'Desperate Dream Song', 'None']
@@ -325,7 +313,6 @@ with input_col:
     engrave_elem_master = ['Elem Master 3', 'Challenger 3', 'Resonance 3', 'Evasion 3', 'Elem Resist 3', 'Recovery 3', 'Elem Master 2', 'Challenger 2', 'Resonance 2', 'Evasion 2', 'Elem Resist 2', 'Recovery 2', 'Elem Master 1', 'Challenger 1', 'Resonance 1', 'Evasion 1', 'Elem Resist 1', 'Recovery 1', 'None']
     card_list = ['Loyal Partner', 'The evil hook', 'Void Shadow', 'Chrome Arms', 'Ancient Guardian', 'Deep Space Swarm', 'Realm Creature', 'Magic Era', 'Dark Realm Madman', 'Light Chaser', 'Clockwork Legion', 'Mech Empire', 'Beast Legion', 'Gloomy Forbidden Area', 'Park Guard', 'None']
 
-    # Create Tabs for better organization
     tab_gear, tab_enhance, tab_pet, tab_fashion, tab_manual = st.tabs(
         ["Gear", "Enhance", "Pet/Card", "Fashion/Buff", "Manual"]
     )
@@ -647,7 +634,6 @@ equipment_list = [
     in_buff_elem, in_buff_atk, in_buff_wine, in_buff_dragon, in_buff_wind, in_buff_mine, in_buff_counter
 ]
 
-# Handle pet key separately
 if pet_main != 'None':
     equipment_list.append(f"{pet_star}{pet_main}")
 if pet_2 != 'None':
@@ -673,13 +659,11 @@ manual_inputs = {
 
 # --- Run Calculation and Display Results ---
 try:
-    # Pass all inputs to fragment for isolated recalculation
     result = calculation_fragment(equipment_list, manual_inputs)
     
     if result:
         final_status, burst_damage, total_damage = result
 
-        # Initialize snapshot on first run so stats are displayed immediately
         if st.session_state.snapshot is None:
             st.session_state.snapshot = (final_status, burst_damage, total_damage)
 
@@ -729,7 +713,6 @@ try:
 
             # Detailed Stats Display
             st.subheader("Detailed Panel Stats")
-            # Map internal keys to user-friendly labels
             stats_to_show = [
                 ('Attack (ATK)', 'Atk'), ('Crit Rate', 'Crit Rate'), ('Crit DMG', 'Crit Dmg'), ('Elem', 'Elem Boost'),
                 ('ENH DMG', 'Elem Dmg'), ('Dmg Bonus', 'Dmg Amp'), ('Skill DMG', 'Skill Dmg'), ('Dmg Debuff', 'Counter'),
@@ -751,9 +734,7 @@ try:
                     with st.container():
                         r1, r2 = st.columns(2)
                         
-                        # เช็คว่าค่าเปลี่ยนเป็น 0 หรือไม่ (ปัดเศษ 1 ตำแหน่งเพื่อป้องกันปัญหาทศนิยมลอยตัว)
                         if round(delta, 1) == 0.0:
-                            # สร้าง HTML จำลองหน้าตา st.metric: สีเหลือง + ไม่มีลูกศร
                             r1.markdown(f"""
                                 <div style="display: flex; flex-direction: column; margin-bottom: 0.8rem;">
                                     <span style="font-size: 0.875rem; color: rgba(250, 250, 250, 0.6);">{label}</span>
@@ -764,7 +745,6 @@ try:
                                 </div>
                             """, unsafe_allow_html=True)
                         else:
-                            # ถ้าค่าเปลี่ยนไป (เพิ่ม/ลด) ให้ใช้ st.metric ปกติของ Streamlit
                             r1.metric(label, f"{val:,.1f}", delta=f"{delta:,.1f}")
                             
                         r2.metric(label, f"{val_snap:,.1f}")
